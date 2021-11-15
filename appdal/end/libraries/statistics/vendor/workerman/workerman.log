@@ -1,0 +1,177 @@
+2021-04-13 16:10:44 pid:3758 Workerman[start.php] start in DEBUG mode
+2021-04-13 16:10:48 pid:3761 Error: Call to a member function get() on array in /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Web/MainIndex.php:37
+Stack trace:
+#0 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Connection/TcpConnection.php(656): Statistics\Web\MainIndex->onMessage()
+#1 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Events/Select.php(292): Workerman\Connection\TcpConnection->baseRead()
+#2 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(2408): Workerman\Events\Select->loop()
+#3 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1541): Workerman\Worker->run()
+#4 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1371): Workerman\Worker::forkOneWorkerForLinux()
+#5 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1345): Workerman\Worker::forkWorkersForLinux()
+#6 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(546): Workerman\Worker::forkWorkers()
+#7 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/start.php(33): Workerman\Worker::runAll()
+#8 {main}
+2021-04-13 16:10:48 pid:3761 Worker[3761] process terminated
+2021-04-13 16:10:48 pid:3758 worker[StatisticWeb:3761] exit with status 64000
+2021-04-13 16:12:03 pid:3758 Workerman[start.php] stopping ...
+2021-04-13 16:12:03 pid:3758 Workerman[start.php] has been stopped
+2021-04-13 16:12:04 pid:3764 Workerman[start.php] start in DEBUG mode
+2021-04-13 16:13:05 pid:3764 Workerman[start.php] stopping ...
+2021-04-13 16:13:05 pid:3764 Workerman[start.php] has been stopped
+2021-04-13 16:13:06 pid:3769 Workerman[start.php] start in DEBUG mode
+2021-04-13 16:14:22 pid:3769 Workerman[start.php] stopping ...
+2021-04-13 16:14:22 pid:3769 Workerman[start.php] has been stopped
+2021-04-13 16:14:23 pid:3775 Workerman[start.php] start in DEBUG mode
+2021-04-13 16:39:40 pid:3775 Workerman[start.php] stopping ...
+2021-04-13 16:39:40 pid:3775 Workerman[start.php] has been stopped
+2021-04-13 16:39:41 pid:3780 Workerman[start.php] start in DEBUG mode
+2021-04-13 17:18:56 pid:3780 Workerman[start.php] stopping ...
+2021-04-13 17:18:56 pid:3780 Workerman[start.php] has been stopped
+2021-04-13 17:18:57 pid:3788 Workerman[start.php] start in DEBUG mode
+2021-04-13 17:25:44 pid:3788 Workerman[start.php] stopping ...
+2021-04-13 17:25:44 pid:3788 Workerman[start.php] has been stopped
+2021-04-13 17:25:45 pid:3796 Workerman[start.php] start in DEBUG mode
+2021-04-13 17:43:41 pid:3796 Workerman[start.php] stopping ...
+2021-04-13 17:43:41 pid:3796 Workerman[start.php] has been stopped
+2021-04-13 17:43:42 pid:3825 Workerman[start.php] start in DEBUG mode
+2021-04-13 17:43:46 pid:3828 Worker[3828] process terminated
+2021-04-13 17:43:47 pid:3830 Worker[3830] process terminated
+2021-04-13 17:43:48 pid:3831 Worker[3831] process terminated
+2021-04-13 17:43:53 pid:3832 Worker[3832] process terminated
+2021-04-13 17:43:53 pid:3833 Worker[3833] process terminated
+2021-04-13 17:44:23 pid:3834 Worker[3834] process terminated
+2021-04-13 17:44:23 pid:3835 Worker[3835] process terminated
+2021-04-13 17:45:23 pid:3836 Worker[3836] process terminated
+2021-04-13 17:45:24 pid:3837 Worker[3837] process terminated
+2021-04-13 17:47:26 pid:3825 Workerman[start.php] stopping ...
+2021-04-13 17:47:26 pid:3825 Workerman[start.php] has been stopped
+2021-04-13 17:47:27 pid:3839 Workerman[start.php] start in DEBUG mode
+2021-04-13 17:47:30 pid:3842 Worker[3842] process terminated
+2021-04-13 17:52:29 pid:3839 Workerman[start.php] stopping ...
+2021-04-13 17:52:29 pid:3839 Workerman[start.php] has been stopped
+2021-04-13 17:52:30 pid:3845 Workerman[start.php] start in DEBUG mode
+2021-04-13 17:52:36 pid:3848 Worker[3848] process terminated
+2021-04-13 20:40:28 pid:3845 Workerman[start.php] stopping ...
+2021-04-13 20:40:28 pid:3845 Workerman[start.php] has been stopped
+2021-04-14 10:29:53 pid:10945 Workerman[start.php] start in DEBUG mode
+2021-04-14 15:00:53 pid:13845 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:07:01 pid:14223 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:07:22 pid:14226 Worker[14226] process terminated
+2021-04-14 16:07:23 pid:14228 Worker[14228] process terminated
+2021-04-14 16:07:23 pid:14229 Worker[14229] process terminated
+2021-04-14 16:07:28 pid:14230 Worker[14230] process terminated
+2021-04-14 16:07:29 pid:14231 Worker[14231] process terminated
+2021-04-14 16:07:34 pid:14223 Workerman[start.php] stopping ...
+2021-04-14 16:07:34 pid:14223 Workerman[start.php] has been stopped
+2021-04-14 16:07:35 pid:14233 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:07:37 pid:14236 Worker[14236] process terminated
+2021-04-14 16:08:07 pid:14238 Worker[14238] process terminated
+2021-04-14 16:08:07 pid:14243 Worker[14243] process terminated
+2021-04-14 16:08:41 pid:14233 Workerman[start.php] stopping ...
+2021-04-14 16:08:41 pid:14233 Workerman[start.php] has been stopped
+2021-04-14 16:08:51 pid:14247 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:09:44 pid:14247 Workerman[start.php] stopping ...
+2021-04-14 16:09:44 pid:14247 Workerman[start.php] has been stopped
+2021-04-14 16:09:45 pid:14259 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:10:32 pid:14259 Workerman[start.php] stopping ...
+2021-04-14 16:10:32 pid:14259 Workerman[start.php] has been stopped
+2021-04-14 16:10:33 pid:14270 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:11:23 pid:14270 Workerman[start.php] stopping ...
+2021-04-14 16:11:23 pid:14270 Workerman[start.php] has been stopped
+2021-04-14 16:11:24 pid:14282 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:12:01 pid:14282 Workerman[start.php] stopping ...
+2021-04-14 16:12:01 pid:14282 Workerman[start.php] has been stopped
+2021-04-14 16:12:02 pid:14290 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:12:22 pid:14290 Workerman[start.php] stopping ...
+2021-04-14 16:12:22 pid:14290 Workerman[start.php] has been stopped
+2021-04-14 16:12:55 pid:14297 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:14:28 pid:14297 Workerman[start.php] stopping ...
+2021-04-14 16:14:28 pid:14297 Workerman[start.php] has been stopped
+2021-04-14 16:14:29 pid:14315 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:41:48 pid:14315 Workerman[start.php] stopping ...
+2021-04-14 16:41:48 pid:14315 Workerman[start.php] has been stopped
+2021-04-14 16:41:49 pid:14452 Workerman[start.php] start in DEBUG mode
+2021-04-14 16:43:27 pid:14452 Workerman[start.php] stopping ...
+2021-04-14 16:43:27 pid:14452 Workerman[start.php] has been stopped
+2021-04-14 16:43:27 pid:14462 Workerman[start.php] start in DEBUG mode
+2021-04-14 17:05:56 pid:14462 Workerman[start.php] stopping ...
+2021-04-14 17:05:56 pid:14462 Workerman[start.php] has been stopped
+2021-04-14 17:05:57 pid:14525 Workerman[start.php] start in DEBUG mode
+2021-04-14 17:06:05 pid:14528 Error: Class 'Statistics\Modules\Config' not found in /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Modules/download.php:16
+Stack trace:
+#0 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Web/index.php(47): Statistics\Modules\download()
+#1 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(217): include('/home/wwwroot/p...')
+#2 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Connection/TcpConnection.php(656): Workerman\WebServer->onMessage()
+#3 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Events/Select.php(292): Workerman\Connection\TcpConnection->baseRead()
+#4 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(2408): Workerman\Events\Select->loop()
+#5 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(85): Workerman\Worker->run()
+#6 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1541): Workerman\WebServer->run()
+#7 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1371): Workerman\Worker::forkOneWorkerForLinux()
+#8 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1345): Workerman\Worker::forkWorkersForLinux()
+#9 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(546): Workerman\Worker::forkWorkers()
+#10 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/start.php(33): Workerman\Worker::runAll()
+#11 {main}
+2021-04-14 17:06:05 pid:14528 Worker[14528] process terminated
+2021-04-14 17:06:05 pid:14525 worker[StatisticWeb:14528] exit with status 64000
+2021-04-14 17:06:06 pid:14530 Error: Class 'Statistics\Modules\Config' not found in /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Modules/download.php:16
+Stack trace:
+#0 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Web/index.php(47): Statistics\Modules\download()
+#1 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(217): include('/home/wwwroot/p...')
+#2 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Connection/TcpConnection.php(656): Workerman\WebServer->onMessage()
+#3 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Events/Select.php(292): Workerman\Connection\TcpConnection->baseRead()
+#4 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(2408): Workerman\Events\Select->loop()
+#5 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(85): Workerman\Worker->run()
+#6 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1541): Workerman\WebServer->run()
+#7 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1371): Workerman\Worker::forkOneWorkerForLinux()
+#8 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1345): Workerman\Worker::forkWorkersForLinux()
+#9 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1675): Workerman\Worker::forkWorkers()
+#10 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1624): Workerman\Worker::monitorWorkersForLinux()
+#11 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(548): Workerman\Worker::monitorWorkers()
+#12 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/start.php(33): Workerman\Worker::runAll()
+#13 {main}
+2021-04-14 17:06:06 pid:14530 Worker[14530] process terminated
+2021-04-14 17:06:06 pid:14525 worker[StatisticWeb:14530] exit with status 64000
+2021-04-14 17:06:06 pid:14531 Error: Class 'Statistics\Modules\Config' not found in /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Modules/download.php:16
+Stack trace:
+#0 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Web/index.php(47): Statistics\Modules\download()
+#1 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(217): include('/home/wwwroot/p...')
+#2 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Connection/TcpConnection.php(656): Workerman\WebServer->onMessage()
+#3 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Events/Select.php(292): Workerman\Connection\TcpConnection->baseRead()
+#4 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(2408): Workerman\Events\Select->loop()
+#5 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(85): Workerman\Worker->run()
+#6 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1541): Workerman\WebServer->run()
+#7 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1371): Workerman\Worker::forkOneWorkerForLinux()
+#8 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1345): Workerman\Worker::forkWorkersForLinux()
+#9 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1675): Workerman\Worker::forkWorkers()
+#10 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1624): Workerman\Worker::monitorWorkersForLinux()
+#11 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(548): Workerman\Worker::monitorWorkers()
+#12 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/start.php(33): Workerman\Worker::runAll()
+#13 {main}
+2021-04-14 17:06:06 pid:14531 Worker[14531] process terminated
+2021-04-14 17:06:06 pid:14525 worker[StatisticWeb:14531] exit with status 64000
+2021-04-14 17:06:11 pid:14532 Error: Class 'Statistics\Modules\Config' not found in /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Modules/download.php:16
+Stack trace:
+#0 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/Applications/Statistics/Web/index.php(47): Statistics\Modules\download()
+#1 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(217): include('/home/wwwroot/p...')
+#2 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Connection/TcpConnection.php(656): Workerman\WebServer->onMessage()
+#3 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Events/Select.php(292): Workerman\Connection\TcpConnection->baseRead()
+#4 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(2408): Workerman\Events\Select->loop()
+#5 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/WebServer.php(85): Workerman\Worker->run()
+#6 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1541): Workerman\WebServer->run()
+#7 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1371): Workerman\Worker::forkOneWorkerForLinux()
+#8 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1345): Workerman\Worker::forkWorkersForLinux()
+#9 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1675): Workerman\Worker::forkWorkers()
+#10 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(1624): Workerman\Worker::monitorWorkersForLinux()
+#11 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/vendor/workerman/workerman/Worker.php(548): Workerman\Worker::monitorWorkers()
+#12 /home/wwwroot/purchase_dev/appdal/end/libraries/statistics/start.php(33): Workerman\Worker::runAll()
+#13 {main}
+2021-04-14 17:06:11 pid:14532 Worker[14532] process terminated
+2021-04-14 17:06:11 pid:14525 worker[StatisticWeb:14532] exit with status 64000
+2021-04-14 17:06:11 pid:14525 Workerman[start.php] stopping ...
+2021-04-14 17:06:11 pid:14525 Workerman[start.php] has been stopped
+2021-04-14 17:06:35 pid:14537 Workerman[start.php] start in DEBUG mode
+2021-04-14 17:06:36 pid:14537 Workerman[start.php] stopping ...
+2021-04-14 17:06:36 pid:14537 Workerman[start.php] has been stopped
+2021-04-14 17:06:37 pid:14542 Workerman[start.php] start in DEBUG mode
+2021-04-15 09:14:01 pid:14542 Workerman[start.php] stopping ...
+2021-04-15 09:14:01 pid:14542 Workerman[start.php] has been stopped
+2021-04-15 09:14:02 pid:14976 Workerman[start.php] start in DEBUG mode

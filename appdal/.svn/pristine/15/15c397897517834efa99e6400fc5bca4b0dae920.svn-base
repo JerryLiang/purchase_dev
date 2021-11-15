@@ -1,0 +1,553 @@
+<?php
+
+use MongoDB\Driver\BulkWrite;
+use MongoDB\Driver\Command;
+use MongoDB\Driver\Query;
+
+/**
+ * 系统消息
+ * @time:2020/8/12
+ * @author:Dean
+ **/
+class System_news extends MX_Controller{
+    private $mongo_db = null;
+    private $mongo_db_name = null;
+
+
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->get_mongo_db();
+
+
+    }
+    //加载mogo_db
+    private function get_mongo_db()
+    {
+
+        $this->_ci = get_instance();
+        $this->_ci->load->config('mongodb');
+        $host = $this->_ci->config->item('mongo_host');
+        $port = $this->_ci->config->item('mongo_port');
+        $user = $this->_ci->config->item('mongo_user');
+        $password = $this->_ci->config->item('mongo_pass');
+        $author_db = $this->_ci->config->item('mongo_db');
+        $this->mongo_db = new MongoDB\Driver\Manager("mongodb://{$user}:{$password}@{$host}:{$port}/{$author_db}");
+        $this->mongo_db_name = $author_db;
+
+
+    }
+
+    //操作类型配置
+    private function opr_set()
+    {
+        return [
+            1=>'采购单审核',
+            2=>'信息修改审核',
+            3=>'待采购主管审核',
+            4=>'待采购副经理审核',
+            5=>'待采购经理审核',
+            6=>'待开发经理审核',
+            7=>'待供管部审核',
+            8=>'待品控部审核',
+            9=>'待供应链总监审核',
+            10=>'待品控部审核',
+            11=>'财务审核',
+            12=>'财务主管审核',
+            13=>'财务经理审核',
+            14=>'作废审核',
+
+
+        ];
+
+
+    }
+
+    private function module_set()
+    {
+       return [ 'purchase' =>'采购单','product'=>'产品管理',
+'request_funds' => '请款单','cancel'=>'取消未到货',
+'report'=>'报损','scree'=>'SKU 屏蔽','declare'=>'报关发票','check_product'=>'验货管理',
+'abnormal'=>'异常冲销审核'];
+
+    }
+
+    //url_info 配置
+
+    private function url_set()
+    {
+        return [
+            'purchase'=>['method'=>'post',
+                'url'=>['/api/purchase/purchase_order/get_order_list'],
+                'params'=>[['purchase_number'=>'','list_type'=>1,'limit'=>20,'offset'=>1]],
+
+            ],
+            'product'=>[
+                'method'=>'post',
+                'url'=>['/api/product/product_mod_audit/get_product_list'],
+                'params'=>[['create_user_id'=>'','create_user_name'=>'','sku'=>'','type'=>1,'is_audit_type'=>2,'limit'=>20,'offset'=>1]],
+           ],
+            //  /api/purchase/purchase_financial_audit_list/financial_audit_list
+            'declare'=>['method'=>'post',
+                'url'=>['/api/purchase/purchase_financial_audit_list/financial_audit_list'],
+                'params'=>[['invoice_number'=>'','limit'=>20,'offset'=>1]],
+
+            ],
+
+            'cancel'=>['method'=>'get',
+                'url'=>['/api/purchase/puerchase_unarrived/cencel_lits'],
+                'params'=>[['cancel_number'=>'','limit'=>20,'offset'=>1]],
+
+            ],
+
+            'report'=>['method'=>'get',
+                'url'=>['/api/abnormal/report_loss/get_report_loss_list'],
+                'params'=>[['bs_number'=>'','limit'=>20,'offset'=>1]],
+
+            ],
+            'scree'=>['method'=>'get',
+                'url'=>['/api/abnormal/product_scree/get_scree_list'],
+                'params'=>[['sku'=>[],'limit'=>20,'offset'=>1]],
+
+            ],
+            'request_funds'=>
+                ['method'=>'get',
+                    'url'=>['/api/finance/purchase_order_pay/payment_list'],
+                    'params'=>[['requisition_number'=>'','limit'=>20,'offset'=>1]],
+
+                ],
+            'abnormal'=>
+                ['method'=>'get',
+                    'url'=>['/api/statement/charge_against/get_charge_against_list'],
+                    'params'=>[['charge_against_number'=>'','limit'=>20,'offset'=>1]],
+
+                ],
+
+            'supplier'=>
+                ['method'=>'post',
+                    'url'=>['/api/supplier/supplier/audit_supplier_list'],
+                    'params'=>[['apply_no'=>'','limit'=>20,'offset'=>1]],
+
+                ],
+            //visit_report
+            'visit_report'=>
+                ['method'=>'post',
+                    'url'=>['/api/supplier/supplier/supplier_visit_list'],
+                    'params'=>[['limit'=>20,'offset'=>1]],
+                ]
+           // /api/purchase/puerchase_unarrived/cencel_lits
+
+        ];
+    }
+    /**
+     * 统计未读信息总数据
+     * @author:luxu
+     * @time:2021年9月8号
+     **/
+    private function get_total_no_read(){
+        $filter['recv_name'] = getActiveUserName();
+        $filter['is_read']  =  1;
+        $command =  new MongoDB\Driver\Command(['count' => "{$this->mongo_db_name}.message",'query'=>$filter]);
+        $result = $this->mongo_db->executeCommand($this->mongo_db_name,$command)->toArray();
+        return $result[0]->n;
+
+    }
+
+
+
+    public function news_list()
+    {
+        $url_set = $this->url_set();
+        $is_read_arr =[1=>'未读取',2=>'已读取'];
+
+        $params=[
+
+            'module' => $this->input->get_post('module'),// 公告or操作手册
+            'title' =>$this->input->get_post('title'),
+            'create_time_start' =>$this->input->get_post('create_time_start'),
+            'create_time_end' =>$this->input->get_post('create_time_end'),
+            'type'=>$this->input->get_post('type')
+
+
+
+        ];
+
+        $page_data=$this->format_page_data();
+        $mongo_query=$this->get_news_list($params,$page_data['offset'],$page_data['limit'],$page_data['page']);
+
+        $cursor = $this->mongo_db->executeQuery("{$this->mongo_db_name}.message", $mongo_query)->toArray();
+
+
+        $filter = ['recv_name'=>getActiveUserName()];
+
+        $command =  new MongoDB\Driver\Command(['count' => 'message','query'=>$filter]);
+        $result = $this->mongo_db->executeCommand($this->mongo_db_name,$command)->toArray();
+
+        $total =$result[0]->n;
+
+
+        if (!empty($cursor)) {
+
+            foreach ($cursor as &$message) {
+                $message = get_object_vars($message);
+
+                $message['is_read'] = $is_read_arr[$message['is_read']];
+
+                $url_info = $url_set[$message['module']]??'';
+                if (!empty($url_info)) {
+                    foreach ($url_info['params'][0] as $key=> &$url_one) {
+                        if ($message['module'] !='product') {
+                            if (empty($url_one)) {
+                                if ($message['module'] == 'scree') {
+                                    $url_one = [$message['param']];
+
+                                } else {
+                                    $url_one = $message['param'];
+
+                                }
+
+                            }
+
+                        } else {
+                            if ($key == 'create_user_id' ) {
+                                $url_info['params'][0][$key] = (string)$message['apply_id'];
+
+                            } elseif ($key == 'create_user_name') {
+                                $url_info['params'][0][$key] = $message['recv_name'];
+
+
+                            }  elseif ($key == 'sku') {
+                                $url_info['params'][0][$key] = $message['param'];
+
+
+                            }
+
+
+
+                        }
+
+
+                    }
+
+                    $message['url_info'] = $url_info;
+
+                }
+
+
+            }
+
+        }
+
+        $return_data = [
+            'data_list'   => [
+                'value' => $cursor,
+                'drop_down_box' =>['opr_set'=>$this->opr_set(),
+                    'module_set'=>$this->module_set()
+
+
+                ]
+            ],
+            'paging_data' => [
+                'total'     => $total,
+                'offset'    => $page_data['page'],
+                'limit'     => $page_data['limit']
+
+            ],
+
+        ];
+
+        //将所有此接收者消息标记为已读
+        $bulk = new MongoDB\Driver\BulkWrite();
+
+
+
+// 修改 update
+        $filters = ['recv_name'=>getActiveUserName()];
+        $sets = ['$set' => ['is_read' => 2]];
+        $updateOptions = ['multi' => true, 'upsert' => false];
+         $bulk->update($filters, $sets, $updateOptions);
+        $result = $this->mongo_db->executeBulkWrite("{$this->mongo_db_name}.message", $bulk);
+
+        $this->success_json($return_data['data_list'],$return_data['paging_data']);
+
+
+    }
+
+    //获取消息列表
+    private function get_news_list($params,$offset=null,$limit=null,$page=1)
+    {
+
+        $query = array();
+
+        if (!empty($params['module'])) {
+            $query['module'] = $params['module'];
+
+        }
+
+        if (!empty($params['title'])) {
+            $query['pushMessage'] = array('$regex'=>"^.*".$params['title'].".*?$");
+
+
+
+        }
+
+        if (!empty($params['create_time_start'])) {
+            $query['create_time'] = array('$gte' => $params['create_time_start']);
+
+
+        }
+
+        if (!empty($params['create_time_end'])) {
+            $query['create_time'] = array('$lte' => $params['create_time_end']);
+
+
+        }
+
+        if (!empty($params['type'])) {
+            $query['type'] = $params['type'];
+
+        }
+
+       $query['recv_name'] = getActiveUserName();//只显示当前接收人消息
+
+        $options['skip'] = $offset;
+        $options['limit'] = $limit;
+        $options['sort'] = ['create_time' => -1];
+
+
+
+
+
+        $query = new MongoDB\Driver\Query($query, $options);
+
+        return $query;
+
+
+
+
+    }
+
+    //前端长轮训获取接收人消息
+
+    public function receive_news()
+    {
+        $user_id = getActiveUserId();//登录用户id
+
+
+        $url_set = $this->url_set();
+        $query = [];
+        $query['recv_name'] = getActiveUserName();
+        $query['is_read']  =  1;
+
+        $options = [
+            'sort' => ['create_time' => -1], //排序 -1 为降序 ，1 升序
+            "limit"=>5, //分页查询的数量
+        ];
+        $query = new MongoDB\Driver\Query($query,$options);
+        $cursor = $this->mongo_db->executeQuery("{$this->mongo_db_name}.message", $query)->toArray();
+        if (!empty($cursor)) {
+
+            foreach ($cursor as $key=>&$message) {
+                $message = get_object_vars($message);
+                $url_info = $url_set[$message['module']];
+
+                if (!empty($url_info)) {
+                    foreach ($url_info['params'][0] as $key=> &$url_one) {
+                        if ($message['module'] !='product') {
+                            if (empty($url_one)) {
+                                $url_one = $message['param'];
+
+                            }
+
+                        } else {
+                            if ($key == 'create_user_id' ) {
+                                $url_info['params'][0][$key] = (string)$message['apply_id'];
+
+                            } elseif ($key == 'create_user_name') {
+                                $url_info['params'][0][$key] = $message['recv_name'];
+
+
+                            }  elseif ($key == 'sku') {
+                                $url_info['params'][0][$key] = $message['param'];
+
+
+                            }
+
+
+                        }
+
+
+                    }
+
+                    $message['url_info'] = $url_info;
+
+                }
+
+
+            }
+
+        }
+
+
+
+
+
+
+        $this->load->model('purchase_news_model');
+
+        //用户消息
+        $read_info = $this->purchase_news_model->purchase_db->select('*')->from('news_login_log')->where('user_id',getActiveUserId())->get()->row_array();//用户是否点进来看过
+        if (empty($read_info)) {
+            $news_info = $this->purchase_news_model->purchase_db->select('id')->from('news_list')->get()->result_array();
+
+        } else {
+            $news_info = $this->purchase_news_model->purchase_db->select('id')->from('news_list')->where('create_time>=',$read_info['read_time'])->get()->result_array();
+
+        }
+
+        if (!empty($news_info)) {
+            $news_ids = array_column($news_info,'id');
+            //查询用户已阅消息
+
+            $have_read_info = $this->purchase_news_model->purchase_db->select('news_id')->from('news_read_log')->where(['user_id'=>$user_id])->get()->result_array();//用户是否点进来看过
+
+            $have_read_news_id = array_column($have_read_info,'news_id');
+
+            $not_read_news_id = array_diff($news_ids,$have_read_news_id);
+
+
+
+        }
+        $not_read_info = [];
+        $new_not_read_info = [];
+        if (!empty($not_read_news_id)) {
+            $not_read_info = $this->purchase_news_model->purchase_db->select('*')->from('news_list')->where_in('id',$not_read_news_id)->get()->result_array();
+            $new_not_read_info = $not_read_info;
+            foreach($not_read_info as $not_read_info_key => $not_read_info_values){
+                $read_info_filter = [
+
+                    'id' => $not_read_info_values['id'],
+                    'recv_name' => getActiveUserName()
+                ];
+                $query = new MongoDB\Driver\Query($read_info_filter,[]);
+                $cursorDatas = $this->mongo_db->executeQuery("{$this->mongo_db_name}.message_detail", $query)->toArray();
+                if(!empty($cursorDatas)) {
+                    unset($not_read_info[$not_read_info_key]);
+                }else {
+                    $insertDatas = [
+
+                        'id' => $not_read_info_values['id'],
+                        'recv_name' => getActiveUserName()
+                    ];
+                    $bulk = new MongoDB\Driver\BulkWrite();
+                    $mongodb_result = $bulk->insert($insertDatas);
+                    $result = $this->mongo_db->executeBulkWrite("{$this->mongo_db_name}.message_detail", $bulk);
+                }
+
+            }
+
+
+
+        }
+
+
+
+        //系统消息数
+
+
+        $filter=[];
+        $filter['recv_name'] = getActiveUserName();
+        $filter['is_read']  =  1;
+
+        $command =  new MongoDB\Driver\Command(['count' => "{$this->mongo_db_name}.message",'query'=>$filter]);
+        $result = $this->mongo_db->executeCommand($this->mongo_db_name,$command)->toArray();
+
+
+        $info = ['no_read_news_num'=>count($new_not_read_info),'no_system_news_num'=>$result[0]->n,'news_list'=>$cursor,'read_news_list'=>$not_read_info];
+
+        // 修改 update
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $filters = ['recv_name'=>getActiveUserName(),'is_read'=>1];
+        $sets = ['$set' => ['is_read' => 2]];
+        $updateOptions = ['multi' => true, 'upsert' => false];
+        $bulk->update($filters, $sets, $updateOptions);
+        $result = $this->mongo_db->executeBulkWrite("{$this->mongo_db_name}.message", $bulk);
+
+
+
+        $this->success_json($info);
+
+
+    }
+
+
+
+
+    public function format_page_data()
+    {
+        $page = $this->input->get_post('offset');
+        $limit          = $this->input->get_post('limit');
+        if(empty($page)  or $page < 0 )  $page  = 1;
+        $limit         = query_limit_range($limit);
+        $offset        = ($page - 1) * $limit;
+        return [
+            'offset' => $offset,
+            'limit' => $limit,
+            'page' => $page
+        ];
+    }
+
+
+
+    //获取用户一定频率浏览新增消息数
+    public function get_user_no_read_nums()
+    {
+        $query['recv_name'] = getActiveUserName();
+        $query['is_read']  =  1;
+        $mongo_query = new MongoDB\Driver\Query($query);
+        $command =  new MongoDB\Driver\Command(['count' => 'message','query'=>$mongo_query]);
+        $result = $this->mongo_db->executeCommand($this->mongo_db_name,$command)->toArray();
+        $total =$result[0]->n;
+        $this->success_json($total);
+
+
+
+    }
+
+    /**
+     * 成功的json输出
+     * @author liwuxue
+     * @date 2019/2/13 9:56
+     * @param array $data
+     * @param array $page_data
+     * @param string $error
+     *  {"status":1,"errorMess":"", "data_list":{}, "paging_data":{}}
+     */
+    protected function success_json($data = [], $page_data = null, $error = "恭喜您,请求成功")
+    {
+        http_response(response_format(1, $data, $error, $page_data));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

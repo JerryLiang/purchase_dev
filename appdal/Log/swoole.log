@@ -1,0 +1,30 @@
+[2021-05-13 14:17:55 *1804.2]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 #1794.6]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 *1802.0]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 $1795.0]	WARNING	swSignal_callback (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 $1795.0]	WARNING	check_worker_exit_status: worker#11[pid=1813] abnormal exit, status=0, signal=1
+[2021-05-13 14:17:55 *1803.1]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 *1806.4]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 *1805.3]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 *1807.5]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 *1809.7]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 *1808.6]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-13 14:17:55 $1795.0]	WARNING	check_worker_exit_status: worker#8[pid=1810] abnormal exit, status=0, signal=1
+[2021-05-13 14:17:55 $1795.0]	WARNING	check_worker_exit_status: worker#9[pid=1811] abnormal exit, status=0, signal=1
+[2021-05-13 14:17:55 $1795.0]	WARNING	check_worker_exit_status: worker#10[pid=1812] abnormal exit, status=0, signal=1
+[2021-05-13 14:17:55 $1795.0]	WARNING	check_worker_exit_status: worker#12[pid=1814] abnormal exit, status=0, signal=1
+[2021-05-24 10:18:28 $11170.0]	WARNING	swSignal_callback (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 *11181.4]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 $11170.0]	WARNING	check_worker_exit_status: worker#9[pid=11186] abnormal exit, status=0, signal=1
+[2021-05-24 10:18:28 *11180.3]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 #11169.6]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 *11179.2]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 *11177.0]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 *11184.7]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 *11182.5]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 *11178.1]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 *11183.6]	WARNING	swSignalfd_onSignal (ERRNO 707): Unable to find callback function for signal Hangup: 1
+[2021-05-24 10:18:28 $11170.0]	WARNING	check_worker_exit_status: worker#8[pid=11185] abnormal exit, status=0, signal=1
+[2021-05-24 10:18:28 $11170.0]	WARNING	check_worker_exit_status: worker#10[pid=11187] abnormal exit, status=0, signal=1
+[2021-05-24 10:18:28 $11170.0]	WARNING	check_worker_exit_status: worker#11[pid=11188] abnormal exit, status=0, signal=1
+[2021-05-24 10:18:28 $11170.0]	WARNING	check_worker_exit_status: worker#12[pid=11189] abnormal exit, status=0, signal=1

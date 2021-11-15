@@ -1,0 +1,98 @@
+<?php
+require APPPATH . 'core/MY_ApiBaseController.php';
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ * 采购控制器
+ */
+
+class System_news extends MY_ApiBaseController {
+
+    private $_modelObj;
+
+    public function __construct() {
+        parent::__construct();
+        $this->load->model('purchase_news/System_news_model');
+        $this->_modelObj = $this->System_news_model;
+    }
+
+
+    /**
+     * 接收消息列表
+     * @author Dean 2020/11/07
+     */
+    public function news_list()
+    {
+        $this->_init_request_param();
+        $params = $this->_requestParams;
+
+        $data = $this->_modelObj->news_list($params);
+
+        if (is_null($data)) {
+            $this->_code = $this->getServerErrorCode();
+            $this->_msg = $this->_modelObj->getErrorMsg();
+        }
+
+        $this->sendData($data);
+    }
+
+
+    public function receive_news()
+    {
+        $this->_init_request_param();
+        $params = $this->_requestParams;
+
+        $data = $this->_modelObj->receive_news($params);
+
+        if (is_null($data)) {
+            $this->_code = $this->getServerErrorCode();
+            $this->_msg = $this->_modelObj->getErrorMsg();
+        }
+
+        $this->sendData($data);
+    }
+
+
+
+
+
+    /**
+     * 点赞
+     * @author Jaxton 2019/01/17
+     */
+    public function get_user_no_read_nums()
+    {
+        $this->_init_request_param();
+        $params = $this->_requestParams;
+
+        $data = $this->_modelObj->get_user_no_read_nums($params);
+
+        if (is_null($data)) {
+            $this->_code = $this->getServerErrorCode();
+            $this->_msg = $this->_modelObj->getErrorMsg();
+        }
+
+        $this->sendData($data);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

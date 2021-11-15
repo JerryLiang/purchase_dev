@@ -1,0 +1,15 @@
+pipeline {
+    agent {
+        docker {
+            image 'docker'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/.m2:/root/.m2 -v /etc/localtime:/etc/localtime'
+        }
+    }
+    stages {
+        stage('Deliver') {
+            steps {
+                sh 'chmod +x Jenkinsfile.sh && dos2unix Jenkinsfile.sh && source Jenkinsfile.sh'
+            }
+        }
+    }
+}

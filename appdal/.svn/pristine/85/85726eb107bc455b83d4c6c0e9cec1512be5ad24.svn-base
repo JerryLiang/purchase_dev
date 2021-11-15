@@ -1,0 +1,172 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * 同款货源列表
+ * User: Jolon
+ * Date: 2021/11/08 0027 11:17
+ */
+
+class Product_similar extends MY_Controller{
+
+    public function __construct(){
+        parent::__construct();
+        $this->load->model('product/Product_similar_model');
+    }
+
+
+    /**
+     * 修改 配置项
+     */
+    public function save_similar_config(){
+        $config_data = $this->input->get_post('config_data');// JSON 格式数据
+        if(empty($config_data) or !is_json($config_data)){
+            $this->error_json('参数config_data缺失或不是JSON格式');
+        }
+
+        $result = $this->Product_similar_model->save_similar_config($config_data);
+        if($result['code']){
+            $this->success_json();
+        }else{
+            $this->error_info($result['message']);
+        }
+    }
+
+    /**
+     * 获取请求参数
+     * @return array
+     */
+    public function get_params(){
+        $params = [
+            'sku_list' => $this->input->get_post('sku_list'), // SKU
+            'product_line_id' => $this->input->get_post('product_line_id'), // 产品线
+            'supplier_code_list' => $this->input->get_post('supplier_code_list'), // 供应商
+            'supply_status' => $this->input->get_post('supply_status'), // 货源状态
+            'priority' => $this->input->get_post('priority'), // 优先级
+            'smc_similar_code_list' => $this->input->get_post('smc_similar_code_list'), // 同款推荐码
+        ];
+
+        return $params;
+    }
+
+    /**
+     * 获取同款货源列表数据（四合一页面）
+     */
+    public function get_similar_list(){
+        $params = $this->get_params();
+
+        $type = $this->input->get_post('type');
+        $page = $this->input->get_post('offset');
+        $limit = $this->input->get_post('limit');
+        if (empty($page) or $page < 0){
+            $page = 1;
+        }
+        $limit = query_limit_range($limit);
+        $offset = ($page - 1) * $limit;
+
+
+        $similar_info = $this->Product_similar_model->get_similar_list($params, $offset, $limit,$type);
+        $this->success_json($similar_info);
+
+    }
+
+    /**
+     * 获取 同款货源数据详情
+     */
+    public function get_similar_detail(){
+        $apply_number = $this->input->get_post('apply_number');
+
+        $similar_info = $this->Product_similar_model->get_similar_detail($apply_number);
+        if(empty($similar_info)) $this->error_json('参数指定的数据不存在');
+
+        $returnInfo = [
+            'id' => $similar_info['id'],
+            'yb_info_detail' => [
+
+            ],
+            'similar_info_detail' => [
+
+            ]
+
+        ];
+
+        $this->success_json($similar_info);
+    }
+
+    /**
+     * 分配人员 同款货源记录
+     */
+    public function allot_user_similar(){
+        $apply_number_list = $this->input->get_post('apply_number_list');
+        $allot_user_id = $this->input->get_post('allot_user_id');
+        $allot_user_name = $this->input->get_post('allot_user_name');
+
+        if(!is_array($apply_number_list)) $this->error_json('参数编号必须是数组');
+
+        foreach($apply_number_list as $apply_number){
+
+            $similar_info = $this->Product_similar_model->get_similar_detail($apply_number);
+            if(empty($similar_info)) $this->error_json('参数指定的数据不存在');
+
+
+            if($similar_info['status'] == 30){// 已分配的，认为是成功的 跳过
+                continue;
+            }
+
+            if($similar_info['status'] != 20){
+                $this->error_json('参数指定的数据不是待分配状态');
+            }
+
+            $similarAllotRes = $this->Product_similar_model->allot_user_similar($apply_number,$allot_user_id,$allot_user_name);
+            if($similarAllotRes['code'] === false){
+                $this->error_info($similarAllotRes['message']);
+            }
+        }
+
+        $this->success_json();
+    }
+
+    /**
+     * 审核 同款货源记录
+     */
+    public function audit_similar(){
+        $apply_number_list = $this->input->get_post('apply_number_list');
+        $audit_remark = $this->input->get_post('audit_remark');
+        $audit_status = $this->input->get_post('audit_status');
+
+        if(!is_array($apply_number_list)) $this->error_json('参数编号必须是数组');
+
+        foreach ($apply_number_list as $apply_number){
+            $similar_info = $this->Product_similar_model->get_similar_detail($apply_number);
+            if(empty($similar_info)) $this->error_json('参数指定的数据不存在');
+
+            if($similar_info['status'] == 35 or $similar_info['status'] == 40){// 已审核的，认为是成功的 跳过
+                continue;
+            }
+
+            if($similar_info['status'] != 30){
+                $this->error_json('参数指定的数据不是待审核状态');
+            }
+
+            $similarAuditRes = $this->Product_similar_model->audit_similar($apply_number,$audit_status,$audit_remark);
+            if($similarAuditRes['code'] === false){
+                $this->error_info($similarAuditRes['message']);
+            }
+        }
+
+        $this->success_json();
+    }
+
+    /**
+     * 获取操作日志
+     */
+    public function get_similar_logs(){
+        $apply_number = $this->input->get_post('apply_number');
+
+        $logs = $this->Product_similar_model->get_similar_logs($apply_number);
+        $this->success_json($logs);
+    }
+
+
+
+
+}

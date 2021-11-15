@@ -1,0 +1,373 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * 同款货源列表
+ * User: Jolon
+ * Date: 2021/11/08 0027 11:17
+ */
+class Product_similar_model extends Purchase_model {
+    protected $table_name   = 'product_similar';// 同款货源SKU列表
+    protected $table_config_name   = 'product_similar_config';// 同款货源配置项信息表
+
+
+    public $_priority_list = ['1' => '高','2' => '中','3' => '低'];// 优先级
+    public $_is_enable_list = ['1' => '是','2' => '否'];// 是否启用
+    public $_status_list = ['10' => '创建','20' => '待分配','30' => '待审核'];
+
+    private $_link_type = 12;// 日志类型
+
+    public function __construct(){
+        parent::__construct();
+
+
+        $this->load->model('product/product_line_model');
+    }
+
+
+    //region  配置项
+
+    /**
+     * 获取配置项
+     * @param int $id 指定记录ID
+     * @return array
+     */
+    public function get_similar_config($id = null){
+        if(!is_null($id)){
+
+            $record = $this->purchase_db->where('id',$id)
+                ->get($this->table_config_name)
+                ->row_array();
+        }else{
+
+            $record = $this->purchase_db->where('is_del',1)
+                ->get($this->table_config_name)
+                ->result_array();
+        }
+
+
+        return $record?$record:[];
+    }
+
+    /**
+     * 修改 配置项
+     * @param $update_arr
+     * @return array
+     */
+    public function save_similar_config($update_arr){
+        if(empty($update_arr)) return $this->res_data(false,'更新数据项为空');
+        if(!is_array($update_arr)) return $this->res_data(false,'更新数据项必须为二维数据');
+
+        $cache_priority_list = [];
+        $sale_section = [];
+
+        foreach($update_arr as $value){
+            $days_sales_start = isset($value['days_sales_start'])?$value['days_sales_start']:0;
+            $days_sales_end = isset($value['days_sales_end'])?$value['days_sales_end']:0;
+            $priority = isset($value['priority'])?$value['priority']:0;
+            $is_enable = isset($value['is_enable'])?$value['is_enable']:0;
+
+
+            if($days_sales_start < 0 or !is_numeric($days_sales_start)){
+                $this->res_data(false,'不满足条件：前输入框值必须是≥0的正整数');
+            }
+            if($days_sales_end < 0 or !is_numeric($days_sales_end)){
+                $this->res_data(false,'不满足条件：后输入框值必须是≥0的正整数');
+            }
+
+            if($days_sales_start >= $days_sales_end){
+                $this->res_data(false,'不满足条件：前输入框<后输入框');
+            }
+
+            if(!in_array($priority,array_keys($this->_priority_list))){
+                $this->res_data(false,'不满足条件：优先级必填');
+            }
+            if(!in_array($is_enable,array_keys($this->_is_enable_list))){
+                $this->res_data(false,'不满足条件： 是否启用必填');
+            }
+
+            if(in_array($priority,$cache_priority_list)){
+                $this->res_data(false,'优先级不能重复，请检查');
+            }else{
+                $cache_priority_list[] = $priority;
+            }
+
+            $sale_section[] = ['start' => $days_sales_start,'end' => $days_sales_end];
+        }
+
+
+        // 验证 销量区间是否有交叉
+        $check_res_flag = true;
+        foreach ($sale_section as $check_key => $check_value){
+            $check_start = $check_value['start'];
+            $check_end = $check_value['end'];
+            foreach($sale_section as $key => $value){
+                if($key == $check_key) continue;
+
+                $start = $value['start'];
+                $end = $value['end'];
+
+                if( ($check_start >= $start and $check_start < $end) or ($check_end >= $start and $check_end < $end) ){
+                    $check_res_flag = false;
+                }
+            }
+        }
+        if($check_res_flag === false) $this->res_data(false,'销量区间有交叉，请检查');
+
+
+        $value_tmp_list = [];
+        foreach($update_arr as $value){
+            $value_tmp = [];
+            $value_tmp['sales_type'] = isset($value['sales_type'])?$value['sales_type']:0;
+            $value_tmp['days_sales_start'] = isset($value['days_sales_start'])?$value['days_sales_start']:0;
+            $value_tmp['days_sales_end'] = isset($value['days_sales_end'])?$value['days_sales_end']:0;
+            $value_tmp['priority'] = isset($value['priority'])?$value['priority']:0;
+            $value_tmp['is_enable'] = isset($value['is_enable'])?$value['is_enable']:0;
+            $value_tmp['create_time'] = date('Y-m-d H:i:s');
+
+            $value_tmp_list[] = $value_tmp;
+
+        }
+
+        $this->purchase_db->update($this->table_config_name,['is_del' => 2]);// 删除已存在的所有数据
+
+        $res = $this->purchase_db->insert_batch($this->table_name,$value_tmp_list);
+        if($res){
+            return $this->res_data(true);
+        }else{
+            return $this->res_data(false,'配置项数据库保存失败');
+        }
+    }
+
+
+    //endregion
+
+
+    /**
+     * 获取 同款货源信息列表
+     * @author Jolon
+     * @param array $params
+     * @param int $offset
+     * @param int $limit
+     * @param string $type 页面类型
+     * @param string $action 操作类型
+     * @return array
+     * 2019-1-8
+     */
+    public function get_similar_list($params, $offset, $limit,$type = 'initial',$action = 'select'){
+
+        if (isset($params['product_line_id']) && !empty($params['product_line_id'])) {
+            $category_all_ids = $this->product_line_model->get_all_category($params['product_line_id']);
+        }
+
+        if($type == 'initial'){// 同款货源推荐
+            $fields = 'sim.id,sim.apply_number,sim.sku,sim.smc_push_times,sim.priority,sim.allot_user_id,sim.allot_user_name,';
+            $fields .= 'sim.applied,sim.status,';
+            $fields .= 'p.supply_status,p.product_img_url,p.product_name,p.supplier_code,p.supplier_name,';
+            $fields .= 'p.purchase_price,p.product_line_id,p.rought_weight,p.sample_package_size';
+        }elseif($type == 'wait_audit' or $type == 'wait_allot' or $type == 'passed'){// 待分配，待审核，已通过
+            $fields = 'sim.*,';
+            $fields .= 'p.supply_status,p.product_img_url,p.product_name,';
+            $fields .= 'p.purchase_price,p.product_line_id,p.rought_weight,p.sample_package_size';
+        }else{
+            return $this->res_data(false,'暂不支持的请求类型');
+        }
+
+        $this->purchase_db->from($this->table_name.' AS sim')
+            ->join('product AS p','sim.sku=p.sku','LEFT');
+
+        // 四合一界面查询，只展示对应状态的记录
+        switch ($type){
+            case 'initial':// 同款货源推荐
+                $this->purchase_db->where('sim.status',10);
+                break;
+            case 'wait_allot':// 待分配
+                $this->purchase_db->where('sim.status',20);
+                break;
+            case 'wait_audit':// 待审核
+                $this->purchase_db->where('sim.status',30);
+                break;
+            case 'passed':// 已通过
+                $this->purchase_db->where('sim.status',40);
+                break;
+        }
+
+        // 产品线
+        if (isset($category_all_ids)) {
+            if($category_all_ids and is_array($category_all_ids)){
+                $children_ids = is_string($category_all_ids)?explode(",", $category_all_ids):[];
+                $children_ids = array_filter($children_ids);
+                $this->purchase_db->where_in('p.product_line_id', $children_ids);
+            }else{
+                $this->purchase_db->where_in('p.product_line_id', -1);// 没有对应的产品线数据是使用-1来排斥数据
+            }
+        }
+
+        if(isset($params['sku_list']) and !empty($params['sku_list'])){
+            if(is_array($params['sku_list'])){
+                $this->purchase_db->where_in('sim.sku',$params['sku_list']);
+            }else{
+                $sku_arr = query_string_to_array($params['sku_list']);
+                $this->purchase_db->where_in('sim.sku',$sku_arr);
+            }
+        }
+        if(isset($params['smc_similar_code_list']) and !empty($params['smc_similar_code_list'])){
+            if(is_array($params['smc_similar_code_list'])){
+                $this->purchase_db->where_in('sim.smc_similar_code',$params['smc_similar_code_list']);
+            }else{
+                $smc_similar_code_arr = query_string_to_array($params['smc_similar_code_list']);
+                $this->purchase_db->where_in('sim.smc_similar_code',$smc_similar_code_arr);
+            }
+        }
+        if(isset($params['supplier_code_list']) and !empty($params['supplier_code_list'])){
+            if(is_array($params['supplier_code_list'])){
+                $this->purchase_db->where_in('sim.supplier_code',$params['supplier_code_list']);
+            }else{
+                $supplier_code_arr = query_string_to_array($params['supplier_code_list']);
+                $this->purchase_db->where_in('sim.supplier_code',$supplier_code_arr);
+            }
+        }
+        if(isset($params['supply_status']) and !empty($params['supply_status'])){
+            if(is_array($params['supply_status'])){
+                $this->purchase_db->where_in('p.supply_status',$params['supply_status']);
+            }else{
+                $this->purchase_db->where('p.supply_status',$params['supply_status']);
+            }
+        }
+        if(isset($params['priority']) and !empty($params['priority'])){
+            if(is_array($params['priority'])){
+                $this->purchase_db->where_in('sim.priority',$params['priority']);
+            }else{
+                $this->purchase_db->where('sim.priority',$params['priority']);
+            }
+        }
+
+
+        $clone_count = clone $this->purchase_db;
+        $count = $clone_count->select('count(1) as num')->get()->row_array();
+        $count = isset($count['num'])?$count['num']:0;
+
+        if ($action = 'export') {
+            $results = $this->purchase_db->select($fields)->get()->result_array();
+        } else {//列表查询
+            $results = $this->purchase_db->select($fields)->limit($limit, $offset)->get()->result_array();
+        }
+
+        if( !empty($results)) {
+            foreach ($results as $key => &$value) {
+                $value['supply_status_cn'] = getProductsupplystatus($value['supply_status']);
+                isset($value['applied']) and $value['applied_cn'] = $value['applied'] == '1'?'否':'是';
+                isset($value['status']) and $value['status_cn'] = $this->_status_list[$value['status']];
+            }
+        }
+
+
+        // 下拉框数据
+        $product_line_list = $this->product_line_model->get_product_line_list(0);
+        $drop_down_box['product_line_id']   = array_column($product_line_list, 'linelist_cn_name','product_line_id');
+        $drop_down_box['supply_status']     = getProductsupplystatus();//货源状态
+        $drop_down_box['priority_list']     = $this->_priority_list;
+
+        $return_data = [
+            'value'   => $results,
+            'page_data' => [
+                'total'     => $count,
+                'limit'     => $limit,
+            ],
+            'drop_down_box' => $drop_down_box
+        ];
+
+
+        return $return_data;
+    }
+
+    /**
+     * 获取 同款货源详情数据
+     * @param $apply_number
+     * @return array
+     */
+    public function get_similar_detail($apply_number){
+        $fields = 'sim.*,';
+        $fields .= 'p.supply_status,p.product_img_url,p.product_name,';
+        $fields .= 'p.purchase_price,p.product_line_id,p.rought_weight,p.sample_package_size';
+
+        $similar_info = $this->purchase_db->select($fields)
+            ->from($this->table_name.' AS sim')
+            ->join('product AS p','sim.sku=p.sku','LEFT')
+            ->where('sim.apply_number',$apply_number)
+            ->get()
+            ->row_array();
+
+        return $similar_info?$similar_info:[];
+    }
+
+    /**
+     * 分配人员
+     * @param $apply_number
+     * @param $allot_user_id
+     * @param $allot_user_name
+     * @return array
+     */
+    public function allot_user_similar($apply_number,$allot_user_id,$allot_user_name){
+        $res = $this->purchase_db->where('apply_number',$apply_number)
+            ->update($this->table_name,['status' => 30,'allot_user_id' => $allot_user_id,'allot_user_name' => $allot_user_name]);
+
+        if($res){
+            return $this->res_data(true,'操作成功');
+        }else{
+            return $this->res_data(false,'审核结果数据库保存失败');
+        }
+    }
+
+
+    /**
+     * 审核 同款货源记录
+     * @param $apply_number
+     * @param $audit_status
+     * @param $remark
+     * @return array
+     */
+    public function audit_similar($apply_number,$audit_status,$remark){
+        if($audit_status != 35 and $audit_status != 40){
+            return $this->res_data(false,'审核状态有误');
+        }
+
+        $res = $this->purchase_db->where('apply_number',$apply_number)->update($this->table_name,['status' => $audit_status]);
+
+        if($res){
+            return $this->res_data(true,'操作成功');
+        }else{
+            return $this->res_data(false,'审核结果数据库保存失败');
+        }
+    }
+
+
+    /**
+     * 新增操作日志
+     * @param string $apply_number 单据编号
+     * @param string $remark 操作备注信息
+     * @param string $operation_type 操作类型
+     * @param string $user_id 操作用户ID
+     * @param string $user_name 操作用户名称
+     * @param string $create_time 创建时间
+     * @return array
+     */
+    public function add_similar_log($apply_number,$remark,$operation_type = '',$user_id = null,$user_name = null,$create_time = null){
+        $this->load->model('statement/Purchase_statement_note_model');
+        $this->Purchase_statement_note_model->add_remark($apply_number,$this->_link_type,$remark,$operation_type,$user_id,$user_name,$create_time);
+        return $this->res_data(true);
+    }
+
+    /**
+     * 获取操作日志
+     * @param $apply_number
+     * @return array
+     */
+    public function get_similar_logs($apply_number){
+        $this->load->model('statement/Purchase_statement_note_model');
+        $logs = $this->Purchase_statement_note_model->get_remark_list($apply_number,$this->_link_type);
+        return $this->res_data(true,'操作成功',$logs);
+    }
+
+
+
+}

@@ -1,0 +1,47 @@
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+class Home extends MX_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function index() {
+        $this->load->view('index.html');
+    }
+
+
+    /**
+     * 删除 缓存文件
+     * @author Jolon
+     * @url home/get_cache_files?dir=suggest
+     */
+    public function get_cache_files(){
+        $dir    = $this->input->get_post('dir');
+        $isRecursion   = $this->input->get_post('isRecursion');
+        $files  = readAllFile(get_export_path($dir),'',$isRecursion);
+
+        echo serialize($files);
+        exit;
+    }
+
+    /**
+     * 删除指定文件
+     */
+    public function delete_file(){
+        $file = $this->input->get_post('file');
+        if(stripos($file,'download_csv') === false){
+            echo '目录无权限';exit;
+        }
+        if(file_exists($file)){
+            unlink($file);
+            echo 'sss';exit;
+        }else{
+            echo 'none';exit;
+        }
+    }
+
+}
+/* End of file Home.php */
+/* Location: ./application/modules/home/controllers/Home.php */

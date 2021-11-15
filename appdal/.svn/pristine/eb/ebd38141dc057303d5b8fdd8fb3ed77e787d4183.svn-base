@@ -1,0 +1,28 @@
+<?php
+
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+include_once APPPATH . "core/MY_API_Controller.php";
+
+class   Lzy_test extends MY_API_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->library('Monolog');
+    }
+
+    public function writeLog()
+    {
+        $monolog = new Monolog();
+        try {
+            $monolog->debug('此程序有bug',['date'=>date("Y-m-d H:i:s"),'module'=>'purchase_order']);
+        }catch (Exception $exception){
+            echo  $exception->getTraceAsString();
+        }
+    }
+
+}
+
+
+

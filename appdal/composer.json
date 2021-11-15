@@ -1,0 +1,17 @@
+{
+    "require": {
+        "monolog/monolog": "^1.24",
+        "swoole/ide-helper": "~4.4",
+        "viest/php-ext-xlswriter-ide-helper": "dev-master",
+        "easyswoole/easyswoole": "3.4.x",
+        "firebase/php-jwt":"5.2.1",
+        "easyswoole/orm": "^1.4",
+        "easyswoole/code-generation": "^2.1",
+        "easyswoole/jwt": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        }
+    }
+}
